@@ -222,14 +222,6 @@ def page_general(data,
         with customer_count_cols[i]:
             st.markdown(f"<div style='{'; '.join([f'{prop}: {value}' for prop, value in box_styles[i].items()])}; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 10px; margin: 0px; height: 100px;'><div style='font-size: 14px;'>{customer_info[i]['top_text']}</div><div style='font-size: 34px; font-weight: bold; text-align: center;'>{customer_info[i]['bottom_text']}</div></div>", unsafe_allow_html=True)
 
-    group_col   = 'Cluster Product Preference'
-    color_col   = 'Gender'
-    label       = 'Cluster'
-
-    cluster_distribution = data[color_col].value_counts(normalize=True) * 100
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', color_col)
-
-
     col1, col2 = st.columns([1, 4])
     with col1:
         st.container()
