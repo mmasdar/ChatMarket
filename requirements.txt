@@ -5,4 +5,4 @@ plotly
 streamlit_option_menu
 openai
 docx2txt
-sklearn
+scikit-learn
