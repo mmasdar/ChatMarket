@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 
 # Set your OpenAI API key
-api_key = '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'
+api_key = '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'
 word_doc_path = 'hasil analisis.docx'
 
 colors = ['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C']
