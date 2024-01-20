@@ -1,4 +1,10 @@
-﻿plotly
-pandas
 numpy
+pandas
+streamlit
+plotly.express
+plotly.graph_objects
 streamlit_option_menu
+openai
+docx2txt
+sklearn.decomposition
+sklearn.preprocessing
