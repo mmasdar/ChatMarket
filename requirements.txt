@@ -1,10 +1,8 @@
 numpy
 pandas
 streamlit
-plotly.express
-plotly.graph_objects
+plotly
 streamlit_option_menu
 openai
 docx2txt
-sklearn.decomposition
-sklearn.preprocessing
+sklearn
