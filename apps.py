@@ -496,12 +496,12 @@ def page_spending_behavior(data, theme):
 
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     fig2 = px.pie(promo_counts,
-                names='index',
+                names=promo_counts.index,
                 values='Promo Code Used',
                 title='Total Purchases with and without Promo',
                 labels={'index': 'Promo Used', 'Promo Code Used': 'Total Purchases'},
-                hole=0.5,  # Mengatur hole untuk membuat donat
-                color_discrete_sequence=['#287E8F', '#15CAB6'])  # Gunakan palet warna yang telah diberikan
+                hole=0.5,
+                color_discrete_sequence=['#287E8F', '#15CAB6'])
 
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
 
