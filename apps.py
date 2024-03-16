@@ -460,24 +460,17 @@ def page_spending_behavior(data, theme):
         <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Spending Behavior</div>
         """, unsafe_allow_html=True)
 
-    # Anda mungkin perlu mengganti nama kolom berikut sesuai dengan dataset Anda
-    revenue_column = 'Purchase Amount (USD)'
-    cluster_column = 'Cluster Spending Behavior' 
-    season_column = 'Season'
-
-
-    revenue_by_cluster_season = data.groupby([cluster_column, season_column])[revenue_column].sum().reset_index()
-    fig = px.bar(revenue_by_cluster_season,
-                x=revenue_column,
-                y=season_column,
-                color=cluster_column,
-                orientation='h',
-                labels={revenue_column: 'Total Revenue (USD)', season_column: 'Season'},
-                title='Total Revenue by Cluster and Season',
-                barmode='group',  # Set barmode to 'group'
-                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
-
-    fig.update_layout(coloraxis_showscale=False)
+    # Group data by subscription status and calculate average purchase amount
+    purchase_by_subscription = data.groupby('Subscription Status')['Purchase Amount (USD)'].mean().reset_index()
+    # Create bar plot using Plotly Express
+    fig = px.bar(purchase_by_subscription, 
+                y='Subscription Status', 
+                x='Purchase Amount (USD)', 
+                title='Average Purchase Amount by Subscription Status',
+                labels={'Purchase Amount (USD)': 'Average Purchase Amount (USD)', 'Subscription Status': 'Subscription Status'},
+                color='Subscription Status',
+                orientation='h')  # Setting orientation to 'h' for horizontal
+    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0), showlegend=False)
     
     df_grouped = data.groupby(['Category', 'Season'])['Purchase Amount (USD)'].sum().reset_index()
     fig3 = px.bar(df_grouped,
