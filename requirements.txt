@@ -1,8 +1,12 @@
+openai
+docx2txt
 numpy
 pandas
 streamlit
 plotly
+plotly.express
+plotly.graph_objects
 streamlit_option_menu
-openai
-docx2txt
 scikit-learn
+sklearn.decomposition
+sklearn.preprocessing
