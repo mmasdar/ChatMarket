@@ -495,8 +495,10 @@ def page_spending_behavior(data, theme):
                     color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
 
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
+    
+    # Membuat plot pie dengan menggunakan indeks DataFrame sebagai nama
     fig2 = px.pie(promo_counts,
-                names=promo_counts.index,
+                names=promo_counts.index.astype(str),  # Mengonversi indeks ke string
                 values='Promo Code Used',
                 title='Total Purchases with and without Promo',
                 labels={'index': 'Promo Used', 'Promo Code Used': 'Total Purchases'},
