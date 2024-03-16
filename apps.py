@@ -1,3 +1,6 @@
+import openai
+import docx2txt
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -5,17 +8,14 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_option_menu import option_menu
 
-import openai
-import docx2txt
-
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
 
 # Set your OpenAI API key
-api_key = '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'
 word_doc_path = 'hasil analisis.docx'
+api_key = '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'
 
 colors = ['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C']
 
@@ -42,11 +42,78 @@ def create_pie_chart_with_table(data, labels_column, values_column, purchase_col
 
     return fig, table
 
+def create_rankflow_chart(dataframe):
+    def top_categories_by_season(dataframe):
+        top_categories = dataframe.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
+        return top_categories
+
+    # Get the top categories by season
+    top_categories_season = top_categories_by_season(dataframe)
+
+    # Create a Rankflow chart
+    rankflow_data = []
+    seasons = ['Fall', 'Winter', 'Spring', 'Summer']  # Define the seasons
+    for season, sales_by_category in top_categories_season.groupby('Category'):
+        rankflow_data.append(go.Scatter(
+            x=sales_by_category.index.get_level_values('Season'),  # Set the X-axis values as the categories
+            y=sales_by_category,
+            mode='lines+markers',
+            name=season,
+            line=dict(width=25)
+        ))
+
+    # Create the layout
+    layout = go.Layout(
+        title='Total Sales by Category in Each Season',
+        xaxis=dict(title='Category'),
+        yaxis=dict(title='Total Sales (pcs)')
+    )
+
+    # Create the figure
+    return go.Figure(data=rankflow_data, layout=layout)
+
+
+def create_spyder_chart(dataframe):
+    def top_categories_by_season(dataframe):
+        top_categories = dataframe.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
+        top_categories = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
+        return top_categories
+
+    # Get the top categories by season
+    top_categories_season = top_categories_by_season(dataframe)
+    print(top_categories_season)
+
+    # Create a Spyder chart
+    spyder_data = []
+    seasons = ['Fall', 'Winter', 'Spring', 'Summer']
+    colors = ['blue', 'red', 'yellow', 'green']
+
+    for i, (season, sales_by_category) in enumerate(top_categories_season.groupby(level=0)):
+        spyder_data.append(go.Scatterpolar(
+            r=sales_by_category.values,
+            theta=sales_by_category.index.get_level_values('Item Purchased'),
+            fill='toself',
+            name=season,
+            line_color=colors[i]
+        ))
+
+    # Create the layout
+    layout = go.Layout(
+        title='Spyder Chart - Total Sales by Category in Each Season',
+        polar=dict(
+            radialaxis=(dict(title='Total Sales (Count)'))
+        ),
+        showlegend=True
+    )
+
+    # Create the figure
+    return go.Figure(data=spyder_data, layout=layout)
+
 def create_line_plot(data, x_col, y_col, title):
     return px.line(data, x=x_col, y=y_col, title=title, color_discrete_sequence=[colors[2]])
 
 def create_bar_chart(data, x_col, y_col, title):
-    return px.bar(data, x=x_col, y=y_col, title=title, color_discrete_sequence=colors)
+    return px.bar(data, x=x_col, y=y_col, title=title, color=x_col, color_discrete_sequence=colors)
 
 def plot_3d_pca(data, feature, cluster):
     scaler = StandardScaler()
@@ -138,7 +205,7 @@ def update_choropleth(fig):
 
     return fig
 
-def update_piechart(fig2, title='perlu update nama'):
+def update_piechart(fig2, title='perlu update nama', height=500):
     chart_bg_color = 'rgba(255, 255, 255, 1)'  # Define chart background color (grey)
     text_color = 'black'  # Define text color
 
@@ -154,7 +221,7 @@ def update_piechart(fig2, title='perlu update nama'):
                     'yanchor': 'top'
         },
         width=800,
-        height=500,
+        height=height,
         margin={"t": 50, "l": 15, "r": 15, "b": 15},
         showlegend=False)  # Set showlegend to False to hide the legend
 
@@ -393,36 +460,85 @@ def page_spending_behavior(data, theme):
         <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Spending Behavior</div>
         """, unsafe_allow_html=True)
 
+    # Anda mungkin perlu mengganti nama kolom berikut sesuai dengan dataset Anda
+    revenue_column = 'Purchase Amount (USD)'
+    cluster_column = 'Cluster Spending Behavior' 
+    season_column = 'Season'
 
-    group_col   = 'Cluster Spending Behavior'
-    color_col   = 'Cluster Spending Behavior'
-    label       = 'Spending Behavior'
 
-    mode_df = data.groupby('State Abbreviation')[group_col].agg(lambda x: x.mode()[0]).reset_index()
-    fig = create_choropleth(mode_df, 'State Abbreviation', group_col, label, "Viridis")
+    revenue_by_cluster_season = data.groupby([cluster_column, season_column])[revenue_column].sum().reset_index()
+    fig = px.bar(revenue_by_cluster_season,
+                x=revenue_column,
+                y=season_column,
+                color=cluster_column,
+                orientation='h',
+                labels={revenue_column: 'Total Revenue (USD)', season_column: 'Season'},
+                title='Total Revenue by Cluster and Season',
+                barmode='group',  # Set barmode to 'group'
+                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
 
-    cluster_distribution = data[color_col].value_counts(normalize=True) * 100
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', color_col)
+    fig.update_layout(coloraxis_showscale=False)
+    
+    df_grouped = data.groupby(['Category', 'Season'])['Purchase Amount (USD)'].sum().reset_index()
+    fig3 = px.bar(df_grouped,
+                x='Season',
+                y='Purchase Amount (USD)',
+                color='Category',
+                barmode='group',  # Untuk menampilkan dua bar secara berdampingan
+                labels={'Purchase Amount (USD)': 'Total Spending (USD)', 'Season': 'Season'},
+                title='Total Spending per Category for Each Season',
+                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
 
-    fig = update_choropleth(fig)
-    fig2 = update_piechart(fig2)
+    category_sales = data.groupby('Category')['Purchase Amount (USD)'].sum().reset_index()
+    fig4 = px.treemap(category_sales,
+                    path=['Category'],
+                    values='Purchase Amount (USD)',
+                    title='Sales Across Categories',
+                    color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
+
+    promo_counts = data['Promo Code Used'].value_counts().reset_index()
+    fig2 = px.pie(promo_counts,
+                names='index',
+                values='Promo Code Used',
+                title='Total Purchases with and without Promo',
+                labels={'index': 'Promo Used', 'Promo Code Used': 'Total Purchases'},
+                hole=0.5,  # Mengatur hole untuk membuat donat
+                color_discrete_sequence=['#287E8F', '#15CAB6'])  # Gunakan palet warna yang telah diberikan
+
+    fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
+
+    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+
+    for i, (index, row) in enumerate(promo_counts.iterrows()):
+        if row['index'] == 'Yes':
+            fig2.add_annotation(text=f"Promo ${row['Promo Code Used']}",
+                            x=0.5, y=0.43,
+                            font=dict(size=15),
+                            showarrow=False)
+        elif row['index'] == 'No':
+            fig2.add_annotation(text=f"No Promo ${row['Promo Code Used']}",
+                            x=0.5, y=0.57,
+                            font=dict(size=15),
+                            showarrow=False)
+
 
     # Create a sidebar column for the pie chart
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([2, 2])
 
     with col1:
         st.plotly_chart(fig, use_container_width=True)
     with col2:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig3, use_container_width=True)
 
     # Create a sidebar column for the pie chart
-    col3, col4, col5 = st.columns([1, 2, 1])
+    col3, col4 = st.columns([2, 2])
 
     with col3:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True)
     with col4:
-        st.plotly_chart(fig2, use_container_width=True)
-    with col5:
         st.plotly_chart(fig2, use_container_width=True)
 
 # Fungsi untuk Halaman lainnya
@@ -446,36 +562,39 @@ def page_product_preference(data, theme):
     <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Product Preference</div>
     """, unsafe_allow_html=True)
 
-    group_col   = 'Cluster Product Preference'
-    color_col   = 'Category'
-    label       = 'Spending Behavior'
+    rankflow = create_rankflow_chart(data)
+    spyder = create_spyder_chart(data)
 
-    mode_df = data.groupby('State Abbreviation')[group_col].agg(lambda x: x.mode()[0]).reset_index()
-    fig = create_choropleth(mode_df, 'State Abbreviation', group_col, label, "Viridis")
+    fig3 = update_piechart(rankflow, 'Rankflow Total Sales in Season', 400)
+    fig4 = update_piechart(spyder, 'Product Sales')
 
-    cluster_distribution = data[color_col].value_counts(normalize=True) * 100
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', color_col)
-    
-    fig = update_choropleth(fig)
-    fig2 = update_piechart(fig2)
+    cluster_distribution = data['Category'].value_counts().head(10)
+    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
+    fig2 = update_piechart(fig2, "Top Categories")
+
+    data_popular = data['Item Purchased'].value_counts().head(10).reset_index()
+    data_popular.columns = ['Item', 'Count']
+    fig = create_bar_chart(data_popular, 'Item', 'Count', 'Most Popular Items')
+    fig = update_piechart(fig, 'Most Popular Items')
 
     # Create a sidebar column for the pie chart
-    col1, col2 = st.columns([3, 1])
-
+   # Create a sidebar column for the pie chart
+    col1, col2 = st.columns([4, 1])
     with col1:
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True)
     with col2:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.markdown('#### Top Product')
+        data = data['Item Purchased'].value_counts().head(25).reset_index()
+        data = pd.DataFrame(data)
+        st.write(data.reset_index(drop=True))
 
-    # Create a sidebar column for the pie chart
-    col3, col4, col5 = st.columns([1, 2, 1])
+    st.plotly_chart(fig3, use_container_width=True)
 
+    col3, col4 = st.columns([2, 3])
     with col3:
         st.plotly_chart(fig2, use_container_width=True)
     with col4:
-        st.plotly_chart(fig2, use_container_width=True)
-    with col5:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
 def page_loyalty_and_engagement(data, theme):
     # Implementasi khusus untuk halaman 'Loyalty and Engagement'
@@ -497,41 +616,89 @@ def page_loyalty_and_engagement(data, theme):
     <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Loyalty and Engagement</div>
     """, unsafe_allow_html=True)
 
-    group_col   = 'Cluster Loyalty and Engagement'
-    color_col   = 'Cluster Loyalty and Engagement'
-    label       = 'Loyalty and Engagement'
+    rating_variations = data['Review Rating'].value_counts()
 
-    mode_df = data.groupby('State Abbreviation')[group_col].agg(lambda x: x.mode()[0]).reset_index()
-    fig = create_choropleth(mode_df, 'State Abbreviation', group_col, label, "Viridis")
+    # Defining bins for categorization
+    bins = [2.5, 2.9, 3.4, 3.9, 4.4, 5.0]
+    labels = ['Very Unsatisfied', 'Unsatisfied', 'Neutral', 'Satisfied', 'Very Satisfied']
 
-    cluster_distribution = data[color_col].value_counts(normalize=True) * 100
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', color_col)
+    labels = labels[::-1]
+    rating_variations_categories = pd.cut(rating_variations.index, bins=bins, labels=labels, include_lowest=True)
+    df_rating_categories = pd.DataFrame({'Rating': rating_variations.index, 'Count': rating_variations.values, 'Rating Category': rating_variations_categories})
 
-    fig = update_choropleth(fig)
-    fig2 = update_piechart(fig2)
+    fig = px.pie(df_rating_categories, names='Rating Category', values='Count', title='Rating Distribution', color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'], category_orders={'Rating Category': labels})
+    fig.update_traces(textinfo='percent', hole=0.5)  # Setting textinfo to percent and hole to create a donut chart
+
+    fig.add_annotation(text='61.7%', x=0.5, y=0.55, font=dict(size=24), showarrow=False)  # Percentage value
+    fig.add_annotation(text='Positive', x=0.5, y=0.45, font=dict(size=14, color='gray'), showarrow=False)  # Label
+
+    fig.update_layout(legend=dict(orientation='h', y=-0.1, x=0.3), margin=dict(l=50, r=50, b=20, t=50, pad=0))
+
+    # Calculate total purchase amount for each frequency category
+    total_purchase_by_frequency = data.groupby('Frequency of Purchases')['Purchase Amount (USD)'].sum().reset_index()
+
+    # Create bar plot using Plotly Express
+    fig3 = px.bar(total_purchase_by_frequency, 
+                x='Frequency of Purchases', 
+                y='Purchase Amount (USD)', 
+                title='Total Purchase Amount by Frequency of Purchases Category',
+                labels={'Purchase Amount (USD)': 'Total Purchase Amount (USD)'},
+                color='Frequency of Purchases')
+
+    # Update layout to remove legend
+    fig3.update_layout(xaxis={'title': 'Frequency of Purchases'}, 
+                    yaxis={'title': 'Total Purchase Amount (USD)'},
+                    showlegend=False)  # Remove legend
+
+    # Calculate total people per category
+    total_people_per_category = data['Frequency of Purchases'].value_counts().reset_index()
+    total_people_per_category.columns = ['Frequency of Purchases', 'Total People']
+
+    # Calculate percentage of people in each category
+    total_people = total_people_per_category['Total People'].sum()
+    total_people_per_category['Percentage'] = (total_people_per_category['Total People'] / total_people) * 100
+
+    # Plotting the treemap
+    fig4 = px.treemap(total_people_per_category, path=['Frequency of Purchases'], values='Total People', 
+                    title='Shopping Behavior - Frequency of Purchases')
+
+    # Group data by subscription status and calculate average purchase amount
+    purchase_by_subscription = data.groupby('Subscription Status')['Purchase Amount (USD)'].mean().reset_index()
+
+    # Create bar plot using Plotly Express
+    fig2 = px.bar(purchase_by_subscription, 
+                y='Subscription Status', 
+                x='Purchase Amount (USD)', 
+                title='Average Purchase Amount by Subscription Status',
+                labels={'Purchase Amount (USD)': 'Average Purchase Amount (USD)', 'Subscription Status': 'Subscription Status'},
+                color='Subscription Status',
+                orientation='h')  # Setting orientation to 'h' for horizontal
+
+    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0), showlegend=False)
+    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
     # Create a sidebar column for the pie chart
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([2, 2])
 
     with col1:
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig3, use_container_width=True)
     with col2:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
     # Create a sidebar column for the pie chart
-    col3, col4, col5 = st.columns([1, 2, 1])
+    col3, col4 = st.columns([3, 3])
 
     with col3:
         st.plotly_chart(fig2, use_container_width=True)
     with col4:
-        st.plotly_chart(fig2, use_container_width=True)
-    with col5:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True)
 
-def page_payment_and_shipping(data, theme):
-    # Implementasi khusus untuk halaman 'Payment and Shipping'
+def page_demographic(data, theme):
+    # Implementasi khusus untuk halaman 'Demographic'
     additional_paragraph = """
-    Segment customers based on their payment and shipping preferences. This can help in optimizing payment and shipping options to enhance customer satisfaction.
+    Understand customer segments based on demographic data. Tailor marketing campaigns and product offerings to suit the needs and preferences of different demographic groups.
     """
     st.sidebar.markdown(f"""
     <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 5px;'>About the Cluster</div>
@@ -545,22 +712,33 @@ def page_payment_and_shipping(data, theme):
     <div class='big-font' style='font-size: 40px; font-weight: bold; text-align: center; margin: 0 0 0;'>Customer Clustering and KPI Dashboard</div>
     """, unsafe_allow_html=True)
     st.markdown(f"""
-    <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Payment and Shipping</div>
+    <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Customer Demographic</div>
     """, unsafe_allow_html=True)
 
 
-    group_col   = 'Cluster Payment and Shipping'
-    color_col   = 'Cluster Payment and Shipping'
-    label       = 'Payment and Shipping'
+    # Histogram Usia Ditumpuk untuk Gender
+    fig = px.histogram(data, x="Age", color="Gender", title="Distribution of Age by Gender")
 
-    mode_df = data.groupby('State Abbreviation')[group_col].agg(lambda x: x.mode()[0]).reset_index()
-    fig = create_choropleth(mode_df, 'State Abbreviation', group_col, label, "Viridis")
+    # Pie Chart Gender
+    fig2 = px.pie(data, names='Gender', title='Gender Distribution')
 
-    cluster_distribution = data[color_col].value_counts(normalize=True) * 100
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', color_col)
+    # Stacked Bar Chart Category by Gender
+    fig3 = px.histogram(data, x='Category', color='Gender', barmode='group', title='Category by Gender')
+    fig3.update_layout(xaxis={'categoryorder':'total descending'})
 
-    fig = update_choropleth(fig)
-    fig2 = update_piechart(fig2)
+    # Box Plot Age by Gender
+    fig4 = px.box(data, x='Gender', y='Age', title='Age Distribution by Gender')
+
+    # Scatter Plot Usia dan Review Rating berdasarkan Gender
+    fig5 = px.scatter(data, x='Age', y='Review Rating', color='Gender', title='Age vs Review Rating by Gender')
+
+    fig2.update_layout(legend=dict(orientation='h', y=-0.1, x=0.1), margin=dict(l=10, r=10, b=20, t=50, pad=0))
+    fig2.update_layout(margin=dict(l=15, r=15, b=20, t=50, pad=0))
+    
+    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0), showlegend=False)
+    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0), showlegend=False)
+    fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0), showlegend=False)
+    fig5.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0), showlegend=False)
 
     # Create a sidebar column for the pie chart
     col1, col2 = st.columns([3, 1])
@@ -568,7 +746,7 @@ def page_payment_and_shipping(data, theme):
     with col1:
         st.plotly_chart(fig, use_container_width=True)
     with col2:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True)
 
     # Create a sidebar column for the pie chart
     col3, col4, col5 = st.columns([1, 2, 1])
@@ -576,11 +754,11 @@ def page_payment_and_shipping(data, theme):
     with col3:
         st.plotly_chart(fig2, use_container_width=True)
     with col4:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig5, use_container_width=True)
     with col5:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig3, use_container_width=True)
 
-def page_demographic(data, theme):
+def insightGPT(data, theme):
     # Implementasi khusus untuk halaman 'Demographic'
     additional_paragraph = """
     Understand customer segments based on demographic data. Tailor marketing campaigns and product offerings to suit the needs and preferences of different demographic groups.
@@ -680,7 +858,7 @@ def main():
                                             'Spending Behavior', 
                                             'Product Preference',
                                             'Loyalty and Engagement',
-                                            'Payment and Shipping',
+                                            'Customer Demographic',
                                             'Chat to InsightGPT'], 
 
                                     icons=['house', 
@@ -708,9 +886,9 @@ def main():
     elif selected == 'Loyalty and Engagement':
         page_loyalty_and_engagement(data, theme)
     elif selected == 'Chat to InsightGPT':
+        insightGPT(data, theme)
+    elif selected == 'Customer Demographic':
         page_demographic(data, theme)
-    elif selected == 'Payment and Shipping':
-        page_payment_and_shipping(data, theme)
 
 
 
