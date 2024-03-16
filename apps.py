@@ -510,7 +510,7 @@ def page_spending_behavior(data, theme):
     fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
     fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
-    for i, (index, row) in enumerate(promo_counts.iterrows()):
+    for index, row in promo_counts.iterrows():
         if row['index'] == 'Yes':
             fig2.add_annotation(text=f"Promo ${row['Promo Code Used']}",
                             x=0.5, y=0.43,
