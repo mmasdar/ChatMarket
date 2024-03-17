@@ -588,24 +588,25 @@ def page_product_preference(data, theme):
     # Create the figure
     fig4 = go.Figure(data=spyder_data, layout=layout)
 
-
+    # Group by Season and Item Purchased, count occurrences, then find top categories
     top_categories_season = data.groupby(['Season', 'Category'])['Category'].count().groupby(level=0).nlargest(4)
     top_categories_season.index = top_categories_season.index.droplevel(0)
     print(top_categories_season)
+    
     top_categories_season = top_categories_season.sort_index(level=1, key=lambda x: x.str.lower())
-
+    print(top_categories_season)
 
     rankflow_data = []
-    for season, sales_by_category in top_categories_season.groupby('Category'):
-        # Reset index to avoid issues with multi-index
-        sales_by_category = sales_by_category.reset_index(level=0)
+
+    for category, sales_by_category in top_categories_season.groupby(level=0):
         rankflow_data.append(go.Scatter(
-            x=sales_by_category['count'].unique(),  # Extract unique values after resetting index
-            y=sales_by_category['Category'],
+            x=sales_by_category.index,  # Menggunakan indeks langsung sebagai sumbu x
+            y=sales_by_category.values,  # Menggunakan nilai penjualan sebagai sumbu y
             mode='lines+markers',
-            name=season,
+            name=category,
             line=dict(width=25)
         ))
+
 
     layout = go.Layout(
         title='Total Sales by Category in Each Season',
