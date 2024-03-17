@@ -552,7 +552,7 @@ def page_product_preference(data, theme):
     """, unsafe_allow_html=True)
 
     cluster_distribution = data['Category'].value_counts().head(10)
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
+    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'Category', 'count')
     fig2 = update_piechart(fig2, "Top Categories")
 
     data_popular = data['Item Purchased'].value_counts().head(10).reset_index()
