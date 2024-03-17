@@ -836,7 +836,7 @@ def insightGPT_manual(data, theme):
 
     if st.button("Ask"):
         if user_input:
-            st.write("Oops! 😅 Sorry, this feature is currently available in limited capacity. Don't worry though! Feel free to reach out to us at mmasadar@gmail.com, and we will be more than happy to assist you further! 🚀✨")
+            st.write("Oops! 😅 Sorry, this feature is currently available in limited capacity. Don't worry though! Feel free to reach out to me at mmasadar@gmail.com or www.mahaseenlab.com, and I'll be more than happy to assist you further! 🚀✨")
         else:
             st.warning("Please enter a question.")
             
