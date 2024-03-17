@@ -499,9 +499,10 @@ def page_spending_behavior(data, theme):
     promo_counts = promo_counts.rename(columns={'index': 'index', 'Promo Code Used': 'promo'})
     
     fig2 = px.pie(promo_counts,
-                names=promo_counts.index,
-                values=promo_counts.promo,
+                names='index',
+                values='promo',
                 title='Total Purchases with and without Promo',
+                labels={'index': 'Promo Used', 'promo': 'Total Purchases'},
                 hole=0.5,
                 color_discrete_sequence=['#287E8F', '#15CAB6'])
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
