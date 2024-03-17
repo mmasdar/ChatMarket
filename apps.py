@@ -557,10 +557,8 @@ def page_product_preference(data, theme):
     #fig3 = update_piechart(rankflow, 'Rankflow Total Sales in Season', 400)
     #fig4 = update_piechart(spyder, 'Product Sales')
 
-
-
+    # Group by Season and Item Purchased, count occurrences, then find top categories
     top_categories = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
-    print(top_categories)
     top_categories_season = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
 
     # Create a Spyder chart
