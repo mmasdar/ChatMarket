@@ -497,15 +497,8 @@ def page_spending_behavior(data, theme):
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     promo_counts = pd.DataFrame(promo_counts)
     promo_counts = promo_counts.rename(columns={'index': 'index', 'Promo Code Used': 'promo'})
-    print(promo_counts)
-    fig2 = px.pie(promo_counts,
-                  names='index',
-                  values='promo',
-                  title='Total Purchases with and without Promo',
-                  labels={'index': 'Promo Used', 'promo': 'Total Purchases'},
-                  hole=0.5,
-                  color_discrete_sequence=['#287E8F', '#15CAB6'])
-    
+
+    fig2 = create_pie_chart(promo_counts, 'index', 'promo')
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
 
     fig2.add_annotation(text='No Promo : $2223', x=0.5, y=0.53, font=dict(size=15, color='black'), showarrow=False)  # Percentage value
