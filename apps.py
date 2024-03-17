@@ -496,25 +496,23 @@ def page_spending_behavior(data, theme):
 
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     
-    # Membuat plot pie dengan menggunakan indeks DataFrame sebagai nama
+    promo_counts = data['Promo Code Used'].value_counts().reset_index()
     fig2 = px.pie(promo_counts,
-                names=promo_counts.index.astype(str),  # Mengonversi indeks ke string
+                names='index',
                 values='Promo Code Used',
                 title='Total Purchases with and without Promo',
                 labels={'index': 'Promo Used', 'Promo Code Used': 'Total Purchases'},
                 hole=0.5,
                 color_discrete_sequence=['#287E8F', '#15CAB6'])
-
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
-
-    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
-    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
-    fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
     fig2.add_annotation(text='No Promo : $2223', x=0.5, y=0.53, font=dict(size=15, color='black'), showarrow=False)  # Percentage value
     fig2.add_annotation(text='Promo : $1677', x=0.5, y=0.47, font=dict(size=15, color='black'), showarrow=False)  # Label
 
+    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
     fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+    fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
     # Create a sidebar column for the pie chart
     col1, col2 = st.columns([2, 2])
