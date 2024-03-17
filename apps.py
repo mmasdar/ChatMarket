@@ -42,6 +42,7 @@ def create_pie_chart_with_table(data, labels_column, values_column, purchase_col
 
     return fig, table
 
+
 def create_rankflow_chart(dataframe):
     def top_categories_by_season(dataframe):
         top_categories = dataframe.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
@@ -55,7 +56,7 @@ def create_rankflow_chart(dataframe):
     seasons = ['Fall', 'Winter', 'Spring', 'Summer']  # Define the seasons
     for season, sales_by_category in top_categories_season.groupby('Category'):
         rankflow_data.append(go.Scatter(
-            x=sales_by_category.index.get_level_values('Season'),  # Set the X-axis values as the categories
+            x=sales_by_category.index.get_level_values('Season').unique(),  # Modify this line
             y=sales_by_category,
             mode='lines+markers',
             name=season,
@@ -76,13 +77,12 @@ def create_rankflow_chart(dataframe):
 def create_spyder_chart(dataframe):
     def top_categories_by_season(dataframe):
         top_categories = dataframe.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
+        print(top_categories)
         top_categories = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
         return top_categories
 
     # Get the top categories by season
     top_categories_season = top_categories_by_season(dataframe)
-    print(top_categories_season)
-
     # Create a Spyder chart
     spyder_data = []
     seasons = ['Fall', 'Winter', 'Spring', 'Summer']
@@ -497,15 +497,15 @@ def page_spending_behavior(data, theme):
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     promo_counts = pd.DataFrame(promo_counts)
     promo_counts = promo_counts.rename(columns={'index': 'index', 'Promo Code Used': 'promo'})
-    
+    print(promo_counts)
     fig2 = px.pie(promo_counts,
-                  names='promo',
-                  values='count',
+                  names='index',
+                  values='promo',
                   title='Total Purchases with and without Promo',
                   labels={'index': 'Promo Used', 'promo': 'Total Purchases'},
                   hole=0.5,
                   color_discrete_sequence=['#287E8F', '#15CAB6'])
-    
+        
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
 
     fig2.add_annotation(text='No Promo : $2223', x=0.5, y=0.53, font=dict(size=15, color='black'), showarrow=False)  # Percentage value
