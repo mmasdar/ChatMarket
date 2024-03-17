@@ -584,6 +584,31 @@ def page_product_preference(data, theme):
         showlegend=True
     )
 
+    
+    top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
+    #top_categories_season.index = top_categories_season.index.droplevel(0)
+    print(top_categories_season)
+
+    rankflow_data = []
+    for season, sales_by_category in top_categories_season.groupby('Category'):
+        # Reset index to avoid issues with multi-index
+        sales_by_category = sales_by_category.reset_index(level='Season')
+        rankflow_data.append(go.Scatter(
+            x=sales_by_category['Season'].unique(),  # Extract unique values after resetting index
+            y=sales_by_category['Category'],
+            mode='lines+markers',
+            name=season,
+            line=dict(width=25)
+        ))
+
+    layout = go.Layout(
+        title='Total Sales by Category in Each Season',
+        xaxis=dict(title='Category'),
+        yaxis=dict(title='Total Sales (pcs)'))
+    
+    fig3 = go.Figure(data=rankflow_data, layout=layout)
+
+
     # Create the figure
     fig4 = go.Figure(data=spyder_data, layout=layout)
 
@@ -606,7 +631,7 @@ def page_product_preference(data, theme):
         data = pd.DataFrame(data)
         st.write(data.reset_index(drop=True))
 
-    st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True)
 
     col3, col4 = st.columns([2, 3])
     with col3:
