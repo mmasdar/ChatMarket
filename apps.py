@@ -531,7 +531,7 @@ def page_spending_behavior(data, theme):
         st.plotly_chart(fig2, use_container_width=True)
 
 # Fungsi untuk Halaman lainnya
-def page_product_preference(data, theme):
+def page_product_preference(data, data_biner, theme):
     # Implementasi khusus untuk halaman 'Product Preference'
     additional_paragraph = """
     Group customers based on the types of products they purchase.  Understanding product preferences can assist in inventory management, personalized marketing, and product development. Identify customer segments based on their spending habits.This can help identify high spenders, bargain hunters, and occasional shoppers. Tailored marketing strategies can be developed for each group, such as exclusive offers for high spenders or targeted discounts for bargain hunters.
@@ -906,7 +906,7 @@ def main():
     elif selected == 'Spending Behavior':
         page_spending_behavior(data, theme)
     elif selected == 'Product Preference':
-        page_product_preference(data, theme)
+        page_product_preference(data, data_biner, theme)
     elif selected == 'Loyalty and Engagement':
         page_loyalty_and_engagement(data, theme)
     elif selected == 'Chat to InsightGPT':
