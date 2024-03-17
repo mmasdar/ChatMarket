@@ -551,6 +551,64 @@ def page_product_preference(data, theme):
     <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Product Preference</div>
     """, unsafe_allow_html=True)
 
+    #rankflow = create_rankflow_chart(data)
+    #spyder = create_spyder_chart(data)
+
+    #fig3 = update_piechart(rankflow, 'Rankflow Total Sales in Season', 400)
+    #fig4 = update_piechart(spyder, 'Product Sales')
+
+
+
+    top_categories = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
+    print(top_categories)
+    top_categories_season = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
+
+    # Create a Spyder chart
+    spyder_data = []
+    colors = ['blue', 'red', 'yellow', 'green']
+
+    for i, (season, sales_by_category) in enumerate(top_categories_season.groupby(level=0)):
+        spyder_data.append(go.Scatterpolar(
+            r=sales_by_category.values,
+            theta=sales_by_category.index.get_level_values('Item Purchased'),
+            fill='toself',
+            name=season,
+            line_color=colors[i]
+        ))
+
+    # Create the layout
+    layout = go.Layout(
+        title='Spyder Chart - Total Sales by Category in Each Season',
+        polar=dict(
+            radialaxis=(dict(title='Total Sales (Count)'))
+        ),
+        showlegend=True
+    )
+
+    # Create the figure
+    fig4 = go.Figure(data=spyder_data, layout=layout)
+
+
+    top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
+    rankflow_data = []
+    for season, sales_by_category in top_categories_season.groupby('Category'):
+        # Reset index to avoid issues with multi-index
+        sales_by_category = sales_by_category.reset_index(level='Season')
+        rankflow_data.append(go.Scatter(
+            x=sales_by_category['Season'].unique(),  # Extract unique values after resetting index
+            y=sales_by_category['Category'],
+            mode='lines+markers',
+            name=season,
+            line=dict(width=25)
+        ))
+
+    layout = go.Layout(
+        title='Total Sales by Category in Each Season',
+        xaxis=dict(title='Category'),
+        yaxis=dict(title='Total Sales (pcs)'))
+    
+    fig3 = go.Figure(data=rankflow_data, layout=layout)
+    
     cluster_distribution = data['Category'].value_counts().head(10)
     fig2 = create_pie_chart(cluster_distribution.reset_index(), 'Category', 'count')
     fig2 = update_piechart(fig2, "Top Categories")
@@ -559,19 +617,18 @@ def page_product_preference(data, theme):
     data_popular.columns = ['Item', 'Count']
     fig = create_bar_chart(data_popular, 'Item', 'Count', 'Most Popular Items')
     fig = update_piechart(fig, 'Most Popular Items')
-
-    # Create a sidebar column for the pie chart
+    
    # Create a sidebar column for the pie chart
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True)
     with col2:
         st.markdown('#### Top Product')
         data = data['Item Purchased'].value_counts().head(25).reset_index()
         data = pd.DataFrame(data)
         st.write(data.reset_index(drop=True))
 
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True)
 
     col3, col4 = st.columns([2, 3])
     with col3:
