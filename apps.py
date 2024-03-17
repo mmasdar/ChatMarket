@@ -591,16 +591,16 @@ def page_product_preference(data, theme):
 
     top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
     #top_categories_season.index = top_categories_season.index.droplevel(0)
-    top_categories_season = top_categories_season.rename_axis(index={'Season': 'Season_2'})
+    #top_categories_season = top_categories_season.rename_axis(index={'Season': 'Season_2'})
 
-    print(top_categories_season)
+    #print(top_categories_season)
 
     rankflow_data = []
     for season, sales_by_category in top_categories_season.groupby('Category'):
         # Reset index to avoid issues with multi-index
         sales_by_category = sales_by_category.reset_index(level=0)
         rankflow_data.append(go.Scatter(
-            x=sales_by_category['Season_2'].unique(),  # Extract unique values after resetting index
+            x=sales_by_category['Season'].unique(),  # Extract unique values after resetting index
             y=sales_by_category['Category'],
             mode='lines+markers',
             name=season,
