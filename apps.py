@@ -508,22 +508,13 @@ def page_spending_behavior(data, theme):
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
 
     fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
-    fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
     fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
     fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
-    for index, row in promo_counts.iterrows():
-        if row['index'] == 'Yes':
-            fig2.add_annotation(text=f"Promo ${row['Promo Code Used']}",
-                            x=0.5, y=0.43,
-                            font=dict(size=15),
-                            showarrow=False)
-        elif row['index'] == 'No':
-            fig2.add_annotation(text=f"No Promo ${row['Promo Code Used']}",
-                            x=0.5, y=0.57,
-                            font=dict(size=15),
-                            showarrow=False)
+    fig2.add_annotation(text='No Promo : $2223', x=0.5, y=0.53, font=dict(size=15, color='black'), showarrow=False)  # Percentage value
+    fig2.add_annotation(text='Promo : $1677', x=0.5, y=0.47, font=dict(size=15, color='black'), showarrow=False)  # Label
 
+    fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
     # Create a sidebar column for the pie chart
     col1, col2 = st.columns([2, 2])
