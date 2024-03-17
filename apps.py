@@ -550,44 +550,13 @@ def page_product_preference(data, data_biner, theme):
     st.markdown(f"""
     <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Product Preference</div>
     """, unsafe_allow_html=True)
+    
+    data_product = pd.melt(data_biner,
+                       id_vars='Cluster Product Preference',
+                       value_vars=['Item Purchased', 'Category', 'Size', 'Color', 'Season'])
 
-    #rankflow = create_rankflow_chart(data)
-    #spyder = create_spyder_chart(data)
-
-    #fig3 = update_piechart(rankflow, 'Rankflow Total Sales in Season', 400)
-    #fig4 = update_piechart(spyder, 'Product Sales')
-
-    # Group by Season and Item Purchased, count occurrences, then find top categories
-    top_item = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
-    top_item.index = top_item.index.droplevel(0)
-    print(top_item)
-    top_item_season = top_item.sort_index(level=1, key=lambda x: x.str.lower())
-
-    # Create a Spyder chart
-    spyder_data = []
-    colors = ['blue', 'red', 'yellow', 'green']
-
-    for i, (season, sales_by_category) in enumerate(top_item_season.groupby(level=0)):
-        spyder_data.append(go.Scatterpolar(
-            r=sales_by_category.values,
-            theta=sales_by_category.index.get_level_values('Item Purchased'),
-            fill='toself',
-            name=season,
-            line_color=colors[i]
-        ))
-
-    # Create the layout
-    layout = go.Layout(
-        title='Spyder Chart - Total Sales by Category in Each Season',
-        polar=dict(
-            radialaxis=(dict(title='Total Sales (Count)'))
-        ),
-        showlegend=True
-    )
-
-    # Create the figure
-    fig4 = go.Figure(data=spyder_data, layout=layout)
-
+    fig3 = px.box(data_product, x='Cluster Product Preference', y='value', color='variable', title='Cluster Analysis')
+    
     cluster_distribution = data['Category'].value_counts().head(10)
     fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
     fig2 = update_piechart(fig2, "Top Categories")
@@ -600,14 +569,14 @@ def page_product_preference(data, data_biner, theme):
    # Create a sidebar column for the pie chart
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig3, use_container_width=True)
     with col2:
         st.markdown('#### Top Product')
         data = data['Item Purchased'].value_counts().head(25).reset_index()
         data = pd.DataFrame(data)
         st.write(data.reset_index(drop=True))
 
-    st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True)
 
     col3, col4 = st.columns([2, 3])
     with col3:
