@@ -588,33 +588,11 @@ def page_product_preference(data, theme):
     # Create the figure
     fig4 = go.Figure(data=spyder_data, layout=layout)
 
-    # Group by Season and Item Purchased, count occurrences, then find top categories
-    top_categories_season = data.groupby(['Season', 'Category'])['Category'].count().groupby(level=0).nlargest(4)
-    top_categories_season.index = top_categories_season.index.droplevel(0)
-    print(top_categories_season)
-    
-    top_categories_season = top_categories_season.sort_index(level=1, key=lambda x: x.str.lower())
-    print(top_categories_season)
+    data_product = pd.melt(data_biner,
+                           id_vars='Cluster Product Preference',
+                           value_vars=['Item Purchased', 'Category', 'Size', 'Color', 'Season'])
 
-    rankflow_data = []
-
-    for category, sales_by_category in top_categories_season.groupby(level=0):
-        rankflow_data.append(go.Scatter(
-            x=sales_by_category.index,  # Menggunakan indeks langsung sebagai sumbu x
-            y=sales_by_category.values,  # Menggunakan nilai penjualan sebagai sumbu y
-            mode='lines+markers',
-            name=category,
-            line=dict(width=25)
-        ))
-
-
-    layout = go.Layout(
-        title='Total Sales by Category in Each Season',
-        xaxis=dict(title='Category'),
-        yaxis=dict(title='Total Sales (pcs)'))
-    
-    fig3 = go.Figure(data=rankflow_data, layout=layout)
-
+    fig3 = px.box(data_product, x='Cluster Product Preference', y='value', color='variable', title='Cluster Analysis')
 
     cluster_distribution = data['Category'].value_counts().head(10)
     fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
