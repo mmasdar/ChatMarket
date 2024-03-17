@@ -599,7 +599,7 @@ def page_product_preference(data, theme):
     rankflow_data = []
     for season, sales_by_category in top_categories_season.groupby('Category'):
         # Reset index to avoid issues with multi-index
-        sales_by_category = sales_by_category.reset_index(level='Season_2')
+        sales_by_category = sales_by_category.reset_index(level=0)
         rankflow_data.append(go.Scatter(
             x=sales_by_category['Season_2'].unique(),  # Extract unique values after resetting index
             y=sales_by_category['Category'],
