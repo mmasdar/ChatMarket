@@ -551,12 +551,6 @@ def page_product_preference(data, theme):
     <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 20px;'>Product Preference</div>
     """, unsafe_allow_html=True)
 
-    rankflow = create_rankflow_chart(data)
-    spyder = create_spyder_chart(data)
-
-    fig3 = update_piechart(rankflow, 'Rankflow Total Sales in Season', 400)
-    fig4 = update_piechart(spyder, 'Product Sales')
-
     cluster_distribution = data['Category'].value_counts().head(10)
     fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
     fig2 = update_piechart(fig2, "Top Categories")
@@ -570,14 +564,14 @@ def page_product_preference(data, theme):
    # Create a sidebar column for the pie chart
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
     with col2:
         st.markdown('#### Top Product')
         data = data['Item Purchased'].value_counts().head(25).reset_index()
         data = pd.DataFrame(data)
         st.write(data.reset_index(drop=True))
 
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
     col3, col4 = st.columns([2, 3])
     with col3:
