@@ -558,16 +558,16 @@ def page_product_preference(data, theme):
     #fig4 = update_piechart(spyder, 'Product Sales')
 
     # Group by Season and Item Purchased, count occurrences, then find top categories
-    top_categories = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
-    top_categories.index = top_categories.index.droplevel(0)
-    print(top_categories)
-    top_categories_season = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
+    top_item = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
+    top_item.index = top_item.index.droplevel(0)
+    print(top_item)
+    top_item_season = top_item.sort_index(level=1, key=lambda x: x.str.lower())
 
     # Create a Spyder chart
     spyder_data = []
     colors = ['blue', 'red', 'yellow', 'green']
 
-    for i, (season, sales_by_category) in enumerate(top_categories_season.groupby(level=0)):
+    for i, (season, sales_by_category) in enumerate(top_item_season.groupby(level=0)):
         spyder_data.append(go.Scatterpolar(
             r=sales_by_category.values,
             theta=sales_by_category.index.get_level_values('Item Purchased'),
@@ -587,7 +587,6 @@ def page_product_preference(data, theme):
 
     # Create the figure
     fig4 = go.Figure(data=spyder_data, layout=layout)
-
 
 
     top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
