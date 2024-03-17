@@ -497,14 +497,15 @@ def page_spending_behavior(data, theme):
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     promo_counts = pd.DataFrame(promo_counts)
     promo_counts = promo_counts.rename(columns={'index': 'index', 'Promo Code Used': 'promo'})
-    
+    print(promo_counts)
     fig2 = px.pie(promo_counts,
-                names='index',
-                values='promo',
-                title='Total Purchases with and without Promo',
-                labels={'index': 'Promo Used', 'promo': 'Total Purchases'},
-                hole=0.5,
-                color_discrete_sequence=['#287E8F', '#15CAB6'])
+                  names='index',
+                  values='promo',
+                  title='Total Purchases with and without Promo',
+                  labels={'index': 'Promo Used', 'promo': 'Total Purchases'},
+                  hole=0.5,
+                  color_discrete_sequence=['#287E8F', '#15CAB6'])
+    
     fig2.update_traces(textinfo='percent', insidetextorientation='horizontal')
 
     fig2.add_annotation(text='No Promo : $2223', x=0.5, y=0.53, font=dict(size=15, color='black'), showarrow=False)  # Percentage value
@@ -612,7 +613,7 @@ def page_loyalty_and_engagement(data, theme):
     labels = labels[::-1]
     rating_variations_categories = pd.cut(rating_variations.index, bins=bins, labels=labels, include_lowest=True)
     df_rating_categories = pd.DataFrame({'Rating': rating_variations.index, 'Count': rating_variations.values, 'Rating Category': rating_variations_categories})
-
+    print(df_rating_categories)
     fig = px.pie(df_rating_categories, names='Rating Category', values='Count', title='Rating Distribution', color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'], category_orders={'Rating Category': labels})
     fig.update_traces(textinfo='percent', hole=0.5)  # Setting textinfo to percent and hole to create a donut chart
 
