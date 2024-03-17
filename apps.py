@@ -560,6 +560,7 @@ def page_product_preference(data, theme):
     # Group by Season and Item Purchased, count occurrences, then find top categories
     top_categories = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
     top_categories.index = top_categories.index.droplevel(0)
+    print(top_categories)
     top_categories_season = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
 
     # Create a Spyder chart
@@ -584,9 +585,13 @@ def page_product_preference(data, theme):
         showlegend=True
     )
 
-    
+    # Create the figure
+    fig4 = go.Figure(data=spyder_data, layout=layout)
+
+
+
     top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
-    top_categories_season.index = top_categories_season.index.droplevel(0)
+    #top_categories_season.index = top_categories_season.index.droplevel(0)
     print(top_categories_season)
 
     rankflow_data = []
@@ -609,18 +614,15 @@ def page_product_preference(data, theme):
     fig3 = go.Figure(data=rankflow_data, layout=layout)
 
 
-    # Create the figure
-    fig4 = go.Figure(data=spyder_data, layout=layout)
-
     cluster_distribution = data['Category'].value_counts().head(10)
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'Category', 'count')
+    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
     fig2 = update_piechart(fig2, "Top Categories")
 
     data_popular = data['Item Purchased'].value_counts().head(10).reset_index()
     data_popular.columns = ['Item', 'Count']
     fig = create_bar_chart(data_popular, 'Item', 'Count', 'Most Popular Items')
     fig = update_piechart(fig, 'Most Popular Items')
-    
+
    # Create a sidebar column for the pie chart
     col1, col2 = st.columns([4, 1])
     with col1:
@@ -638,7 +640,7 @@ def page_product_preference(data, theme):
         st.plotly_chart(fig2, use_container_width=True)
     with col4:
         st.plotly_chart(fig, use_container_width=True)
-
+        
 def page_loyalty_and_engagement(data, theme):
     # Implementasi khusus untuk halaman 'Loyalty and Engagement'
     additional_paragraph = """
