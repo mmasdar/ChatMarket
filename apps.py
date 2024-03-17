@@ -589,11 +589,11 @@ def page_product_preference(data, theme):
     fig4 = go.Figure(data=spyder_data, layout=layout)
 
 
-    top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
-    #top_categories_season.index = top_categories_season.index.droplevel(0)
-    #top_categories_season = top_categories_season.rename_axis(index={'Season': 'Season_2'})
+    top_categories_season = data.groupby(['Season', 'Category'])['Category'].count().groupby(level=0).nlargest(4)
+    top_categories_season.index = top_categories_season.index.droplevel(0)
+    print(top_categories_season)
+    top_categories_season = top_categories_season.sort_index(level=1, key=lambda x: x.str.lower())
 
-    #print(top_categories_season)
 
     rankflow_data = []
     for season, sales_by_category in top_categories_season.groupby('Category'):
