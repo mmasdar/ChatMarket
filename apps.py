@@ -512,11 +512,6 @@ def page_spending_behavior(data, theme):
 
     fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
-    
-    cluster_distribution = data['Category'].value_counts().head(10)
-    #print(cluster_distribution)
-    #fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
-
     # Create a sidebar column for the pie chart
     col1, col2 = st.columns([2, 2])
 
