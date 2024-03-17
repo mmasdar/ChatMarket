@@ -586,7 +586,7 @@ def page_product_preference(data, theme):
 
     
     top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
-    #top_categories_season.index = top_categories_season.index.droplevel(0)
+    top_categories_season.index = top_categories_season.index.droplevel(0)
     print(top_categories_season)
 
     rankflow_data = []
