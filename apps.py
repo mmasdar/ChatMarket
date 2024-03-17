@@ -588,12 +588,6 @@ def page_product_preference(data, data_biner, theme):
     # Create the figure
     fig4 = go.Figure(data=spyder_data, layout=layout)
 
-    data_product = pd.melt(data_biner,
-                           id_vars='Cluster Product Preference',
-                           value_vars=['Item Purchased', 'Category', 'Size', 'Color', 'Season'])
-
-    fig3 = px.box(data_product, x='Cluster Product Preference', y='value', color='variable', title='Cluster Analysis')
-
     cluster_distribution = data['Category'].value_counts().head(10)
     fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
     fig2 = update_piechart(fig2, "Top Categories")
@@ -613,7 +607,7 @@ def page_product_preference(data, data_biner, theme):
         data = pd.DataFrame(data)
         st.write(data.reset_index(drop=True))
 
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
 
     col3, col4 = st.columns([2, 3])
     with col3:
