@@ -558,7 +558,7 @@ def page_product_preference(data, data_biner, theme):
     fig3 = px.box(data_product, x='Cluster Product Preference', y='value', color='variable', title='Cluster Analysis')
     
     cluster_distribution = data['Category'].value_counts().head(10)
-    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
+    fig2 = create_pie_chart(cluster_distribution.reset_index(), 'Category', 'count')
     fig2 = update_piechart(fig2, "Top Categories")
 
     data_popular = data['Item Purchased'].value_counts().head(10).reset_index()
