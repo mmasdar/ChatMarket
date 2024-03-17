@@ -15,7 +15,7 @@ scaler = StandardScaler()
 
 # Set your OpenAI API key
 word_doc_path = 'hasil analisis.docx'
-api_key = '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'
+api_key = ''
 
 colors = ['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C']
 
@@ -815,6 +815,30 @@ def insightGPT(data, theme):
         else:
             st.warning("Please enter a question.")
 
+
+def insightGPT_manual(data, theme):
+    # Implementasi khusus untuk halaman 'Demographic'
+    additional_paragraph = """
+    Understand customer segments based on demographic data. Tailor marketing campaigns and product offerings to suit the needs and preferences of different demographic groups.
+    """
+    st.sidebar.markdown(f"""
+    <div class='big-font' style='font-size: 20px; text-align: center; margin: 0 0 5px;'>About the Cluster</div>
+    """, unsafe_allow_html=True)
+    st.sidebar.markdown(
+    f"<div style='margin-top: 5px; margin-bottom: 5px; padding-left: 10px; border-left: 2px solid #333;'>{additional_paragraph}</div>",
+    unsafe_allow_html=True
+    )
+
+    # Streamlit UI
+    st.title("Chat to InsightGPT")
+
+    user_input = st.text_input("Enter your question:")
+
+    if st.button("Ask"):
+        if user_input:
+            st.write("Oops! 😅 Sorry, this feature is currently available in limited capacity. Don't worry though! Feel free to reach out to us at mmasadar@gmail.com, and we will be more than happy to assist you further! 🚀✨")
+        else:
+            st.warning("Please enter a question.")
             
 # Fungsi Utama
 def main():
@@ -904,7 +928,7 @@ def main():
     elif selected == 'Loyalty and Engagement':
         page_loyalty_and_engagement(data, theme)
     elif selected == 'Chat to InsightGPT':
-        insightGPT(data, theme)
+        insightGPT_manual(data, theme)
     elif selected == 'Customer Demographic':
         page_demographic(data, theme)
 
