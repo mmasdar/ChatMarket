@@ -559,6 +559,7 @@ def page_product_preference(data, theme):
 
     # Group by Season and Item Purchased, count occurrences, then find top categories
     top_categories = data.groupby(['Season', 'Item Purchased'])['Item Purchased'].count().groupby(level=0).nlargest(25)
+    top_categories.index = top_categories.index.droplevel(0)
     top_categories_season = top_categories.sort_index(level=1, key=lambda x: x.str.lower())
 
     # Create a Spyder chart
@@ -586,27 +587,6 @@ def page_product_preference(data, theme):
     # Create the figure
     fig4 = go.Figure(data=spyder_data, layout=layout)
 
-
-    top_categories_season = data.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
-    rankflow_data = []
-    for season, sales_by_category in top_categories_season.groupby('Category'):
-        # Reset index to avoid issues with multi-index
-        sales_by_category = sales_by_category.reset_index(level='Season')
-        rankflow_data.append(go.Scatter(
-            x=sales_by_category['Season'].unique(),  # Extract unique values after resetting index
-            y=sales_by_category['Category'],
-            mode='lines+markers',
-            name=season,
-            line=dict(width=25)
-        ))
-
-    layout = go.Layout(
-        title='Total Sales by Category in Each Season',
-        xaxis=dict(title='Category'),
-        yaxis=dict(title='Total Sales (pcs)'))
-    
-    fig3 = go.Figure(data=rankflow_data, layout=layout)
-    
     cluster_distribution = data['Category'].value_counts().head(10)
     fig2 = create_pie_chart(cluster_distribution.reset_index(), 'Category', 'count')
     fig2 = update_piechart(fig2, "Top Categories")
@@ -626,7 +606,7 @@ def page_product_preference(data, theme):
         data = pd.DataFrame(data)
         st.write(data.reset_index(drop=True))
 
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
 
     col3, col4 = st.columns([2, 3])
     with col3:
