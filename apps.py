@@ -42,7 +42,6 @@ def create_pie_chart_with_table(data, labels_column, values_column, purchase_col
 
     return fig, table
 
-
 def create_rankflow_chart(dataframe):
     def top_categories_by_season(dataframe):
         top_categories = dataframe.groupby('Season')['Category'].value_counts().groupby(level=0).nlargest(4)
@@ -55,9 +54,11 @@ def create_rankflow_chart(dataframe):
     rankflow_data = []
     seasons = ['Fall', 'Winter', 'Spring', 'Summer']  # Define the seasons
     for season, sales_by_category in top_categories_season.groupby('Category'):
+        # Reset index to avoid issues with multi-index
+        sales_by_category = sales_by_category.reset_index(level='Season')
         rankflow_data.append(go.Scatter(
-            x=sales_by_category.index.get_level_values('Season').unique(),  # Modify this line
-            y=sales_by_category,
+            x=sales_by_category['Season'].unique(),  # Extract unique values after resetting index
+            y=sales_by_category['Category'],
             mode='lines+markers',
             name=season,
             line=dict(width=25)
