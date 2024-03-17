@@ -496,8 +496,8 @@ def page_spending_behavior(data, theme):
 
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     
-    promo_counts = data['Promo Code Used'].value_counts().reset_index()
-    fig2 = px.pie(promo_counts,
+    promo_counts = data['Promo Code Used'].value_counts()
+    fig2 = px.pie(promo_counts.reset_index(),
                 names='index',
                 values='Promo Code Used',
                 title='Total Purchases with and without Promo',
