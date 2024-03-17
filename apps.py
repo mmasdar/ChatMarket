@@ -472,31 +472,30 @@ def page_spending_behavior(data, theme):
                 orientation='h',
                 labels={revenue_column: 'Total Revenue (USD)', season_column: 'Season'},
                 title='Total Revenue by Cluster and Season',
-                barmode='group',  # Set barmode to 'group'
-                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
-
+                barmode='group',
+                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])
     fig.update_layout(coloraxis_showscale=False)
-    
+
     df_grouped = data.groupby(['Category', 'Season'])['Purchase Amount (USD)'].sum().reset_index()
     fig3 = px.bar(df_grouped,
                 x='Season',
                 y='Purchase Amount (USD)',
                 color='Category',
-                barmode='group',  # Untuk menampilkan dua bar secara berdampingan
+                barmode='group',
                 labels={'Purchase Amount (USD)': 'Total Spending (USD)', 'Season': 'Season'},
                 title='Total Spending per Category for Each Season',
-                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
+                color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])
+    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
 
     category_sales = data.groupby('Category')['Purchase Amount (USD)'].sum().reset_index()
     fig4 = px.treemap(category_sales,
                     path=['Category'],
                     values='Purchase Amount (USD)',
                     title='Sales Across Categories',
-                    color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])  # Gunakan palet warna yang telah diberikan
+                    color_discrete_sequence=['#287E8F', '#15CAB6', '#F6B53D', '#EF8A5A', '#E85E76', '#696CB5', '#0F488C'])
 
-    promo_counts = data['Promo Code Used'].value_counts().reset_index()
-    
     promo_counts = data['Promo Code Used'].value_counts()
+    #print(promo_counts)
     fig2 = px.pie(promo_counts.reset_index(),
                 names='index',
                 values='Promo Code Used',
@@ -509,10 +508,12 @@ def page_spending_behavior(data, theme):
     fig2.add_annotation(text='No Promo : $2223', x=0.5, y=0.53, font=dict(size=15, color='black'), showarrow=False)  # Percentage value
     fig2.add_annotation(text='Promo : $1677', x=0.5, y=0.47, font=dict(size=15, color='black'), showarrow=False)  # Label
 
-    fig.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
     fig2.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
-    fig3.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
-    fig4.update_layout(margin=dict(l=50, r=50, b=20, t=50, pad=0))
+
+    
+    cluster_distribution = data['Category'].value_counts().head(10)
+    #print(cluster_distribution)
+    #fig2 = create_pie_chart(cluster_distribution.reset_index(), 'index', 'Category')
 
     # Create a sidebar column for the pie chart
     col1, col2 = st.columns([2, 2])
@@ -651,10 +652,9 @@ def page_loyalty_and_engagement(data, theme):
     fig4 = px.treemap(total_people_per_category, path=['Frequency of Purchases'], values='Total People', 
                     title='Shopping Behavior - Frequency of Purchases')
 
+
     # Group data by subscription status and calculate average purchase amount
     purchase_by_subscription = data.groupby('Subscription Status')['Purchase Amount (USD)'].mean().reset_index()
-
-    # Create bar plot using Plotly Express
     fig2 = px.bar(purchase_by_subscription, 
                 y='Subscription Status', 
                 x='Purchase Amount (USD)', 
