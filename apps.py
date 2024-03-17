@@ -496,10 +496,11 @@ def page_spending_behavior(data, theme):
 
     promo_counts = data['Promo Code Used'].value_counts().reset_index()
     promo_counts = pd.DataFrame(promo_counts)
-    
+    promo_counts = promo_counts.rename(columns={'index': 'index', 'Promo Code Used': 'promo'})
+    print(promo_counts)
     fig2 = px.pie(promo_counts,
-                names = promo_counts.index,
-                values = 'Promo Code Used',
+                names=promo_counts.index,
+                values=promo_counts.promo,
                 title='Total Purchases with and without Promo',
                 labels={'index': 'Promo Used', 'Promo Code Used': 'Total Purchases'},
                 hole=0.5,
