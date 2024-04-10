@@ -1,14 +1,15 @@
-# Customer Segmentation Dashboard
+# Retrieval Augmented Generation (RAG) Project – LLM for Market Analysis
 
-[![Demo Proyek](https://img.youtube.com/vi/JvP0BQF551M/0.jpg)](https://youtu.be/JvP0BQF551M)
+![Tampilan Dashboard](20240319_144344.mp4)
 
-This project is an interactive dashboard that offers a deeper understanding of customer behavior and Key Performance Indicator (KPI) analysis based on customer data. It helps pinpoint customer segments, uncover trends, and gain invaluable insights into how customers engage with your business.
+This project is an interactive dashboard providing a profound understanding of customer behavior and Key Performance Indicator (KPI) analysis derived from customer data. It facilitates the identification of customer segments, reveals trends, and offers invaluable insights into customer engagement with your business.
 
-## Retrieval Augmented Generation (RAG) LLM for Customer Insights
+The development of InsightGPT, a market analysis consultancy based on Large Language Model (LLM) utilizing Retrieval Augmented Generation (RAG), referencing data analysis results and scientific market theories from various papers. This enables deeper and more reliable analysis tailored to prevailing market conditions.
+
+## Retrieval Augmented Generation (RAG) and Large Language Model (LLM)
+This project harnesses the power of Retrieval Augmented Generation (RAG) in a Large Language Model (LLM) to unlock profound insights and unravel intricate relationships from customer data. Through the innovative fusion of retrieval and generation techniques, our RAG-LLM offers a dynamic approach to understanding customer behavior and preferences.
 
 ![Tampilan Dashboard](flowchart-RAG-besar.gif)
-
-This project harnesses the power of Retrieval Augmented Generation (RAG) in a Large Language Model (LLM) to unlock profound insights and unravel intricate relationships from customer data. Through the innovative fusion of retrieval and generation techniques, our RAG-LLM offers a dynamic approach to understanding customer behavior and preferences.
 
 By fine-tuning the RAG-LLM on a specific dataset, we enhance its capacity to delve deep into the nuances of customer interactions, illuminating hidden patterns and uncovering invaluable insights. Join us on this journey as we leverage cutting-edge technology to revolutionize customer analytics and empower decision-making processes.
 
