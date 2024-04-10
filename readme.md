@@ -1,6 +1,6 @@
 # Customer Segmentation Dashboard
 
-![Tampilan Dashboard](flowchart RAG besar.gif)
+![Tampilan Dashboard](flowchart-RAG-besar.gif)
 
 This project is an interactive dashboard that offers a deeper understanding of customer behavior and Key Performance Indicator (KPI) analysis based on customer data. It helps pinpoint customer segments, uncover trends, and gain invaluable insights into how customers engage with your business.
 
