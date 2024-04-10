@@ -1,6 +1,6 @@
 # Retrieval Augmented Generation (RAG) Project – LLM for Market Analysis
 
-![Tampilan Dashboard](20240319_144344.mp4)
+![Tampilan Dashboard](chat_action.gif)
 
 This project is an interactive dashboard providing a profound understanding of customer behavior and Key Performance Indicator (KPI) analysis derived from customer data. It facilitates the identification of customer segments, reveals trends, and offers invaluable insights into customer engagement with your business.
 
