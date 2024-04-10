@@ -1,12 +1,16 @@
 # Customer Segmentation Dashboard
 
-![Tampilan Dashboard](flowchart-RAG-besar.gif)
+[![Demo Proyek](https://img.youtube.com/vi/JvP0BQF551M/0.jpg)](https://youtu.be/JvP0BQF551M)
 
 This project is an interactive dashboard that offers a deeper understanding of customer behavior and Key Performance Indicator (KPI) analysis based on customer data. It helps pinpoint customer segments, uncover trends, and gain invaluable insights into how customers engage with your business.
 
-## Large Language Model (LLM)
+## Retrieval Augmented Generation (RAG) LLM for Customer Insights
 
-This project utilizes a pre-trained large language model (LLM) to extract meaningful insights and relationships from the customer data. The LLM has been fine-tuned on a specific dataset to improve its understanding of customer behavior and preferences.
+![Tampilan Dashboard](flowchart-RAG-besar.gif)
+
+This project harnesses the power of Retrieval Augmented Generation (RAG) in a Large Language Model (LLM) to unlock profound insights and unravel intricate relationships from customer data. Through the innovative fusion of retrieval and generation techniques, our RAG-LLM offers a dynamic approach to understanding customer behavior and preferences.
+
+By fine-tuning the RAG-LLM on a specific dataset, we enhance its capacity to delve deep into the nuances of customer interactions, illuminating hidden patterns and uncovering invaluable insights. Join us on this journey as we leverage cutting-edge technology to revolutionize customer analytics and empower decision-making processes.
 
 ### Model Architecture
 
