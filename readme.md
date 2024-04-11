@@ -9,7 +9,7 @@ The development of InsightGPT, a market analysis consultancy based on Large Lang
 ## Retrieval Augmented Generation (RAG) and Large Language Model (LLM)
 This project harnesses the power of Retrieval Augmented Generation (RAG) in a Large Language Model (LLM) to unlock profound insights and unravel intricate relationships from customer data. Through the innovative fusion of retrieval and generation techniques, our RAG-LLM offers a dynamic approach to understanding customer behavior and preferences.
 
-![Tampilan Dashboard](flowchart-RAG-besar.gif)
+![Tampilan Dashboard](flowchart-RAG-baru.gif)
 
 By fine-tuning the RAG-LLM on a specific dataset, we enhance its capacity to delve deep into the nuances of customer interactions, illuminating hidden patterns and uncovering invaluable insights. Join us on this journey as we leverage cutting-edge technology to revolutionize customer analytics and empower decision-making processes.
 
